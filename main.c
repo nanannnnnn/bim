@@ -19,7 +19,7 @@ void processCommand(char *command, FILE **f) {
     if (strcmp(command, "edit") == 0) {
         enterEditMode(*f);
     } else if (strcmp(command, "save") == 0) {
-        // ファイルを一時的に閉じて保存
+        // close and restore the file
         fclose(*f);
         *f = fopen("myfile.txt", "a+");
         printf("File saved.\n");
@@ -41,7 +41,7 @@ int main() {
     char command[BUFFER_SIZE];
     printf("Enter command ('edit', 'save', 'exit'):\n");
     while (fgets(command, BUFFER_SIZE, stdin)) {
-        // コマンドの改行文字を削除
+        // delete \n in command
         command[strcspn(command, "\n")] = 0;
         processCommand(command, &file);
         printf("Enter command ('edit', 'save', 'exit'):\n");
@@ -70,7 +70,7 @@ void processCommand(char *command, FILE **f) {
     if (strcmp(command, "edit") == 0) {
         enterEditMode(*f);
     } else if (strcmp(command, "save") == 0) {
-        // ファイルを一時的に閉じて保存
+        // close and restore the file
         fclose(*f);
         *f = fopen("myfile.txt", "a+");
         printf("File saved.\n");
@@ -92,7 +92,7 @@ int main() {
     char command[BUFFER_SIZE];
     printf("Enter command ('edit', 'save', 'exit'):\n");
     while (fgets(command, BUFFER_SIZE, stdin)) {
-        // コマンドの改行文字を削除
+        // delete \n in command
         command[strcspn(command, "\n")] = 0;
         processCommand(command, &file);
         printf("Enter command ('edit', 'save', 'exit'):\n");
