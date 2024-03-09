@@ -30,7 +30,7 @@ void processCommand(char *command, FILE **f, char *filename) {
 }
 
 int main(int argc, char *argv[]) {
-    char *filename = "myfile.txt"; 
+    char *filename = "sample.txt"; 
     if (argc > 1) {
         filename = argv[1]; 
     }
