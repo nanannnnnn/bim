@@ -10,6 +10,7 @@
 #include<assert.h>
 #include<time.h>
 #include<sys/time.h>
+#include<ncurses.h>
 
 #define MAX(x, y) (x) > (y) ? (x) : (y)
 #define MIN(x, y) (x) < (y) ? (x) : (y)
