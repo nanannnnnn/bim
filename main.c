@@ -4,13 +4,36 @@
 
 void enterEditMode(FILE *f) {
     char buffer[BUFFER_SIZE];
-    printf("Entering edit mode (Type 'EXIT' to finish editing):\n");
-    while (fgets(buffer, BUFFER_SIZE, stdin)) {
-        if (strncmp(buffer, "EXIT", 4) == 0) {
-            break;
+    int ch; 
+    int x = 0, y = 0; 
+    clear(); // clear the screen
+    printw("Entering edit mode (Type CTRL+G to finish editing):\n");
+    move(1, 0); // move the cursor to the next line
+
+    while ((ch = getch()) != 7) { // press CTRL+G to finish
+        if (ch == KEY_BACKSPACE ||  ch == 127) { // process the backspace
+            if (x > 0) {
+                getyx(stdscr, y, x); 
+                move(y, --x); 
+                delch(); 
+            }
+        } else {
+            getyx(stdscr, y, x); // get the position of the current cursor position
+            printw("%c", ch); 
+            buffer[x++] = ch; 
+            if (ch == '\n' || x >= BUFFER_SIZE - 1) {
+                buffer[x] = '\0'; // finish the string
+                fputs(buffer, f); 
+                x = 0; // reset the buffer
+            }
         }
-        fputs(buffer, f);
     }
+    // write into the file when the last line finished without starting a new line
+    if (x > 0) {
+        buffer[x] = '\0'; 
+        fputs(buffer, f); 
+    }
+    refresh(); 
 }
 
 void processCommand(char *command, FILE **f, char *filename) {
@@ -23,6 +46,7 @@ void processCommand(char *command, FILE **f, char *filename) {
         printf("File saved.\n");
     } else if (strcmp(command, "exit") == 0) {
         fclose(*f);
+        endwin(); // end the ncurses mode
         exit(0);
     } else {
         printf("Unknown command.\n");
@@ -41,14 +65,18 @@ int main(int argc, char *argv[]) {
         return 1; 
     }
 
-    char command[BUFFER_SIZE];
-    printf("Enter command ('edit', 'save', 'exit'):\n");
-    while (fgets(command, BUFFER_SIZE, stdin)) {
-        // delete \n in command
-        command[strcspn(command, "\n")] = 0;
-        processCommand(command, &file, filename);
-        printf("Enter command ('edit', 'save', 'exit'):\n");
-    }
+    initscr(); // start the ncurses mode
+    raw(); // nullify the line buffer ring
+    keypad(stdscr, TRUE); // make the specific key valid
+    noecho(); // hide the input string from the screen
 
+    char command[BUFFER_SIZE];
+    printw("Enter command ('edit', 'save', 'exit'):\n");
+    while (1) {
+        getstr(command); 
+        processCommand(command, &file, filename);
+        printw("Enter command ('edit', 'save', 'exit'):\n");
+    }
+    endwin(); // finish the ncurses mode
     return 0;
 }
